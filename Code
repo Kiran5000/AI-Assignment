@@ -1,0 +1,115 @@
+!pip install opencv-python numpy
+
+
+import cv2
+import numpy as np
+import datetime
+
+def detect_balls(frame):
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    color_ranges = {
+        'green': [(40, 40, 40), (80, 255, 255)],
+        'white': [(0, 0, 200), (255, 30, 255)],
+        'yellow': [(20, 100, 100), (30, 255, 255)],
+        'orange': [(5, 100, 100), (15, 255, 255)]
+    }
+
+    ball_coordinates = []
+
+    for color, (lower, upper) in color_ranges.items():
+        lower = np.array(lower, dtype=np.uint8)
+        upper = np.array(upper, dtype=np.uint8)
+
+        mask = cv2.inRange(hsv, lower, upper)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > 100:
+                moments = cv2.moments(contour)
+                centroid_x = int(moments['m10'] / moments['m00'])
+                centroid_y = int(moments['m01'] / moments['m00'])
+                ball_coordinates.append((centroid_x, centroid_y, color))
+
+    return ball_coordinates
+
+def determine_quadrant(coord, frame_width, frame_height):
+    x, y, _ = coord
+
+    if x < frame_width // 2:
+        if y < frame_height // 2:
+            return 1
+        else:
+            return 3
+    else:
+        if y < frame_height // 2:
+            return 2
+        else:
+            return 4
+
+def process_video(input_video_path, output_video_path, output_text_path):
+    cap = cv2.VideoCapture(input_video_path)
+    frame_width = int(cap.get(3))
+    frame_height = int(cap.get(4))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+
+    with open(output_text_path, 'w') as text_file:
+        text_file.write("Timestamp,BallColour,Quadrant,EventType\n")
+
+    ball_tracker = {}
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        timestamp = cap.get(cv2.CAP_PROP_POS_MSEC) // 1000.0  # Convert to seconds
+
+        ball_coordinates = detect_balls(frame)
+
+        # Mark all balls as not found in the current frame
+        for ball_id in ball_tracker:
+            ball_tracker[ball_id]['found'] = False
+
+        for coord in ball_coordinates:
+            ball_id = hash(coord)
+            if ball_id not in ball_tracker:
+                ball_tracker[ball_id] = {
+                    'entry_time': timestamp,
+                    'quadrant': determine_quadrant(coord, frame_width, frame_height),
+                    'color': coord[2],
+                    'found': True
+                }
+                entry_event = f"{timestamp}, {ball_tracker[ball_id]['color']}, {ball_tracker[ball_id]['quadrant']}, Entry\n"
+                with open(output_text_path, 'a') as text_file:
+                    text_file.write(entry_event)
+            else:
+                ball_tracker[ball_id]['found'] = True
+
+            cv2.circle(frame, (coord[0], coord[1]), 10, (0, 255, 0), -1)
+            cv2.putText(frame, f"{timestamp} | Q{ball_tracker[ball_id]['quadrant']} | {ball_tracker[ball_id]['color']} | Entry", 
+                        (coord[0] - 50, coord[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
+        # Check for balls that were not found in the current frame (exit event)
+        for ball_id, ball_info in list(ball_tracker.items()):
+            if not ball_info['found']:
+                exit_event = f"{timestamp}, {ball_info['color']}, {ball_info['quadrant']}, Exit\n"
+                with open(output_text_path, 'a') as text_file:
+                    text_file.write(exit_event)
+                del ball_tracker[ball_id]
+
+        out.write(frame)
+
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+    
+if __name__ == "__main__":
+    input_video_path = '/content/drive/MyDrive/AI assignment/AI Assignment video.mp4'
+    output_video_path = '/content/drive/MyDrive/AI assignment/output_video.mp4'
+    output_text_path = '/content/drive/MyDrive/AI assignment/output_events.txt'
+
+    process_video(input_video_path, output_video_path, output_text_path)
