@@ -1,4 +1,4 @@
-# Markup :  # Ball Tracking and Event Recording with OpenCV #
+  # Ball Tracking and Event Recording with OpenCV #
 
 Overview
 
