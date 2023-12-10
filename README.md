@@ -1,4 +1,4 @@
-#Ball Tracking and Event Recording with OpenCV
+**Ball Tracking and Event Recording with OpenCV**
 
 Overview
 This Python script utilizes the OpenCV library to perform ball tracking and event recording in a video. The program is designed to track the movement of balls of different colors across various quadrants in the video, recording events such as entry and exit for each ball.
