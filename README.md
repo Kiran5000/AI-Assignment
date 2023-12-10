@@ -1,12 +1,14 @@
-  # Ball Tracking and Event Recording with OpenCV #
+# Ball Tracking and Event Recording with OpenCV #
 
-Overview
+## Overview ##
 
 This Python script utilizes the OpenCV library to perform ball tracking and event recording in a video. The program is designed to track the movement of balls of different colors across various quadrants in the video, recording events such as entry and exit for each ball.
 
-Features
+## Features ##
 
-Color Detection: The program uses color-based segmentation to detect balls of different colors (green, white, yellow, orange) in the video.
+ ### Color Detection: ### 
+
+The program uses color-based segmentation to detect balls of different colors (green, white, yellow, orange) in the video.
 
 Quadrant Determination: Balls are assigned to one of four quadrants based on their position within the frame.
 
