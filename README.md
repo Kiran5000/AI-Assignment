@@ -10,37 +10,53 @@ This Python script utilizes the OpenCV library to perform ball tracking and even
 
 The program uses color-based segmentation to detect balls of different colors (green, white, yellow, orange) in the video.
 
-Quadrant Determination: Balls are assigned to one of four quadrants based on their position within the frame.
+### Quadrant Determination: ###
 
-Timestamped Event Recording: The script records entry and exit events for each ball, including the timestamp, ball color, quadrant number, and event type.
+Balls are assigned to one of four quadrants based on their position within the frame.
 
-Processed Video Output: The output video visually displays the timestamp, quadrant number, ball color, and entry/exit indication.
+### Timestamped Event Recording: ### 
 
-Text File Output: The recorded events are saved in a text file in the specified format (Timestamp, BallColour, Quadrant, EventType).
+The script records entry and exit events for each ball, including the timestamp, ball color, quadrant number, and event type.
 
-How to Use
-Installation: Install the required libraries using the following command:
+### Processed Video Output: ### 
 
-bash
-Copy code
+The output video visually displays the timestamp, quadrant number, ball color, and entry/exit indication.
+
+### Text File Output: ###
+
+The recorded events are saved in a text file in the specified format (Timestamp, BallColour, Quadrant, EventType).
+
+## How to Use ##
+
+### Installation: ###
+
+**Install the required libraries using the following command:**
+
 pip install opencv-python numpy
-Input Video: Replace 'path/to/input_video.mp4' with the path to your input video.
 
-Output Paths: Specify the paths for the output video and text file:
+**Input Video:**
+
+Replace 'path/to/input_video.mp4' with the path to your input video.
+
+**Output Paths:**
+Specify the paths for the output video and text file:
 
 python
+
 output_video_path = 'path/to/output_video.mp4'
 output_text_path = 'path/to/output_events.txt'
 Run the code
 
-Customization
-Color Ranges: Adjust the color ranges in the color_ranges dictionary based on your specific scenario.
+### Customization ###
+**Color Ranges:**  Adjust the color ranges in the color_ranges dictionary based on your specific scenario.
 
-Parameters: Fine-tune parameters such as area threshold, frame dimensions, and others in the script to match your requirements.
+**Parameters:** Fine-tune parameters such as area threshold, frame dimensions, and others in the script to match your requirements.
 
-Dependencies
+### Dependencies ###
+
 OpenCV
+
 NumPy
 
-Author
-[Your Name]
+### Author ###
+Nunavath Kiran Nayak
